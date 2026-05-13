@@ -152,57 +152,55 @@ class Card3D {
     canvas.width = TEXTURE_SIZE;
     canvas.height = Math.floor(768 * scale);
 
-    // Fondo con colores muy sutiles
+    // Fondo blanco limpio
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Degradado sutil gris (blanco a gris claro)
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, this.colorScheme.primary + "18");
-    gradient.addColorStop(0.5, this.colorScheme.secondary + "12");
-    gradient.addColorStop(1, this.colorScheme.accent + "18");
+    gradient.addColorStop(0, "#f5f5f5");
+    gradient.addColorStop(0.5, "#e8e8e8");
+    gradient.addColorStop(1, "#f0f0f0");
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Brillo superior sutil
-    ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height * 0.4);
-
-    const gradient2 = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient2.addColorStop(0, "rgba(255, 255, 255, 0.15)");
-    gradient2.addColorStop(0.5, "rgba(255, 255, 255, 0)");
-    gradient2.addColorStop(1, "rgba(255, 255, 255, 0)");
-    ctx.fillStyle = gradient2;
+    // Overlay oscuro para toda la card (efecto blanco y negro)
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Overlay oscuro compacto solo detrás del texto
-    const textAreaY = Math.floor(60 * scale);
-    const textAreaH = Math.floor(440 * scale);
-    ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
-    this.roundRect(ctx, 12, textAreaY, canvas.width - 24, textAreaH, 10);
-    ctx.fill();
-
-    // Borde decorativo
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
-    ctx.lineWidth = 1;
-    this.roundRect(ctx, 8, 8, canvas.width - 16, canvas.height - 16, 14);
+    // Borde
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+    ctx.lineWidth = 1.5;
+    this.roundRect(ctx, 6, 6, canvas.width - 12, canvas.height - 12, 12);
     ctx.stroke();
 
-    // Icono
+    // Icono GRANDE en blanco
     ctx.fillStyle = "#ffffff";
-    ctx.font = `bold ${Math.ceil(50 * scale)}px Arial, sans-serif`;
+    ctx.font = `bold ${Math.ceil(80 * scale)}px Arial, sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(this.icon, canvas.width / 2, Math.floor(72 * scale));
+    ctx.fillText(this.icon, canvas.width / 2, Math.floor(85 * scale));
 
-    // Título en negro
-    ctx.fillStyle = "#000000";
-    ctx.font = `bold ${Math.ceil(38 * scale)}px Arial, sans-serif`;
-    ctx.fillText(this.title, canvas.width / 2, Math.floor(145 * scale));
+    // Línea separadora
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(canvas.width * 0.2, Math.floor(110 * scale));
+    ctx.lineTo(canvas.width * 0.8, Math.floor(110 * scale));
+    ctx.stroke();
 
-    // Descripción en negro
-    ctx.font = `${Math.ceil(24 * scale)}px Arial, sans-serif`;
-    ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+    // Título en blanco GRANDE
+    ctx.fillStyle = "#ffffff";
+    ctx.font = `bold ${Math.ceil(48 * scale)}px Arial, sans-serif`;
+    ctx.fillText(this.title, canvas.width / 2, Math.floor(150 * scale));
+
+    // Descripción en blanco
+    ctx.font = `${Math.ceil(30 * scale)}px Arial, sans-serif`;
+    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
 
     const words = this.description.split(" ");
     let line = "";
-    let y = Math.floor(185 * scale);
+    let y = Math.floor(195 * scale);
     const maxWidth = canvas.width - 60;
 
     words.forEach((word) => {
@@ -210,22 +208,17 @@ class Card3D {
       if (ctx.measureText(testLine).width > maxWidth) {
         ctx.fillText(line.trim(), canvas.width / 2, y);
         line = word + " ";
-        y += Math.floor(28 * scale);
+        y += Math.floor(36 * scale);
       } else {
         line = testLine;
       }
     });
     ctx.fillText(line.trim(), canvas.width / 2, y);
 
-    // Barra inferior decorativa más discreta
-    const iconY = Math.floor(400 * scale);
-    const gradientBar = ctx.createLinearGradient(60, 0, canvas.width - 60, 0);
-    gradientBar.addColorStop(0, this.colorScheme.primary);
-    gradientBar.addColorStop(0.5, this.colorScheme.secondary);
-    gradientBar.addColorStop(1, this.colorScheme.accent);
-    ctx.globalAlpha = 0.5;
-    ctx.fillStyle = gradientBar;
-    ctx.fillRect(80, iconY, canvas.width - 160, 3);
+    // Barra inferior blanca
+    ctx.globalAlpha = 0.6;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(80, Math.floor(430 * scale), canvas.width - 160, 3);
     ctx.globalAlpha = 1;
 
     const texture = new THREE.CanvasTexture(canvas);
