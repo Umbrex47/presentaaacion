@@ -1,6 +1,9 @@
 import * as THREE from "three";
 import { gsap } from "gsap";
 
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const TEXTURE_SIZE = isMobile ? 512 : 640;
+
 export default class Card3DManager {
   constructor() {
     this.scene = new THREE.Scene();
@@ -10,6 +13,7 @@ export default class Card3DManager {
     this.container = null;
     this.isInitialized = false;
     this.lights = [];
+    this.isVisible = false;
   }
 
   init(containerId) {
@@ -19,15 +23,17 @@ export default class Card3DManager {
       return;
     }
 
-    this.renderer = new THREE.WebGLRenderer({ 
-      antialias: true, 
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: false,
       alpha: true,
-      powerPreference: "high-performance",
+      powerPreference: isMobile ? "low-power" : "high-performance",
+      precision: isMobile ? "mediump" : "highp",
     });
-    
+
     const size = Math.min(window.innerWidth, window.innerHeight);
+    const pixelRatio = isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5);
     this.renderer.setSize(size, size);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setPixelRatio(pixelRatio);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.container.appendChild(this.renderer.domElement);
 
@@ -39,18 +45,14 @@ export default class Card3DManager {
   }
 
   addLights() {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     this.scene.add(ambientLight);
 
-    const pointLight1 = new THREE.PointLight(0x6366f1, 1, 20);
-    pointLight1.position.set(-5, 3, 5);
-    this.scene.add(pointLight1);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight.position.set(2, 3, 5);
+    this.scene.add(dirLight);
 
-    const pointLight2 = new THREE.PointLight(0xa855f7, 1, 20);
-    pointLight2.position.set(5, -2, 5);
-    this.scene.add(pointLight2);
-
-    this.lights.push(ambientLight, pointLight1, pointLight2);
+    this.lights.push(ambientLight, dirLight);
   }
 
   add(options) {
@@ -92,10 +94,12 @@ export default class Card3DManager {
   }
 
   render() {
-    if (this.renderer && this.scene && this.camera) {
-      this.renderer.render(this.scene, this.camera);
-    }
+    if (!this.isVisible || !this.renderer || !this.scene || !this.camera) return;
+    this.renderer.render(this.scene, this.camera);
   }
+
+  show() { this.isVisible = true; }
+  hide() { this.isVisible = false; }
 
   updateMouse(mouseX, mouseY) {
     this.cards.forEach((card) => {
@@ -143,9 +147,10 @@ class Card3D {
   createGlassTexture() {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
-    
-    canvas.width = 1024;
-    canvas.height = 768;
+
+    const scale = TEXTURE_SIZE / 1024;
+    canvas.width = TEXTURE_SIZE;
+    canvas.height = Math.floor(768 * scale);
 
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
     gradient.addColorStop(0, this.colorScheme.primary + "20");
@@ -154,80 +159,67 @@ class Card3D {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
     ctx.fillRect(0, 0, canvas.width, canvas.height * 0.4);
 
     const gradient2 = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient2.addColorStop(0, "rgba(255, 255, 255, 0.15)");
-    gradient2.addColorStop(0.3, "rgba(255, 255, 255, 0.05)");
+    gradient2.addColorStop(0, "rgba(255, 255, 255, 0.12)");
+    gradient2.addColorStop(0.3, "rgba(255, 255, 255, 0.03)");
     gradient2.addColorStop(1, "rgba(255, 255, 255, 0)");
     ctx.fillStyle = gradient2;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
-    ctx.lineWidth = 3;
-    this.roundRect(ctx, 12, 12, canvas.width - 24, canvas.height - 24, 24);
-    ctx.stroke();
-
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
-    ctx.lineWidth = 1;
-    this.roundRect(ctx, 16, 16, canvas.width - 32, canvas.height - 32, 20);
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+    ctx.lineWidth = 2;
+    this.roundRect(ctx, 8, 8, canvas.width - 16, canvas.height - 16, 16);
     ctx.stroke();
 
     ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 100px Arial, sans-serif";
+    ctx.font = `bold ${Math.floor(60 * scale)}px Arial, sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.shadowColor = this.colorScheme.primary;
-    ctx.shadowBlur = 30;
-    ctx.fillText(this.icon, canvas.width / 2, 140);
+    ctx.fillText(this.icon, canvas.width / 2, Math.floor(90 * scale));
 
-    ctx.shadowBlur = 0;
-    ctx.font = "bold 70px Arial, sans-serif";
+    ctx.font = `bold ${Math.floor(45 * scale)}px Arial, sans-serif`;
     ctx.fillStyle = "#ffffff";
-    ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-    ctx.shadowBlur = 10;
-    ctx.shadowOffsetY = 4;
-    ctx.fillText(this.title, canvas.width / 2, 280);
+    ctx.fillText(this.title, canvas.width / 2, Math.floor(180 * scale));
 
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetY = 0;
-    ctx.font = "42px Arial, sans-serif";
+    ctx.font = `${Math.floor(28 * scale)}px Arial, sans-serif`;
     ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
 
     const words = this.description.split(" ");
     let line = "";
-    let y = 460;
-    const maxWidth = 950;
+    let y = Math.floor(290 * scale);
+    const maxWidth = canvas.width - 60;
 
     words.forEach((word) => {
       const testLine = line + word + " ";
       if (ctx.measureText(testLine).width > maxWidth) {
         ctx.fillText(line.trim(), canvas.width / 2, y);
         line = word + " ";
-        y += 55;
+        y += Math.floor(35 * scale);
       } else {
         line = testLine;
       }
     });
     ctx.fillText(line.trim(), canvas.width / 2, y);
 
-    const iconY = 640;
-    const gradientBar = ctx.createLinearGradient(100, 0, canvas.width - 100, 0);
+    const iconY = Math.floor(400 * scale);
+    const gradientBar = ctx.createLinearGradient(60, 0, canvas.width - 60, 0);
     gradientBar.addColorStop(0, this.colorScheme.primary);
     gradientBar.addColorStop(0.5, this.colorScheme.secondary);
     gradientBar.addColorStop(1, this.colorScheme.accent);
     ctx.fillStyle = gradientBar;
-    ctx.fillRect(100, iconY, canvas.width - 200, 6);
-    ctx.fillRect(100, iconY + 20, canvas.width - 200, 3);
+    ctx.fillRect(60, iconY, canvas.width - 120, 4);
     ctx.globalAlpha = 0.3;
-    ctx.fillRect(100, iconY + 40, (canvas.width - 200) / 3, 3);
+    ctx.fillRect(60, iconY + 12, (canvas.width - 120) / 3, 2);
     ctx.globalAlpha = 1;
 
     const texture = new THREE.CanvasTexture(canvas);
-    texture.minFilter = THREE.NearestFilter;
-    texture.magFilter = THREE.NearestFilter;
-    texture.anisotropy = 16;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    texture.anisotropy = 4;
+    texture.format = THREE.RGBAFormat;
     texture.needsUpdate = true;
     return texture;
   }
@@ -250,14 +242,10 @@ class Card3D {
     const texture = this.createGlassTexture();
     const geometry = new THREE.PlaneGeometry(2.6, 1.9);
 
-    const material = new THREE.MeshPhysicalMaterial({ 
+    const material = new THREE.MeshBasicMaterial({
       map: texture,
       transparent: true,
       opacity: 0.95,
-      roughness: 0.1,
-      metalness: 0.1,
-      clearcoat: 0.8,
-      clearcoatRoughness: 0.1,
       side: THREE.DoubleSide,
     });
 

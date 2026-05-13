@@ -1,10 +1,13 @@
 import Renderer from "./core/Renderer.js";
 import Scene from "./core/Scene.js";
 import Lights from "./core/Lights.js";
-import Model from "./objects/Model.js";
 import Animation from "./core/Animation.js";
 import Controls from "./core/Controls.js";
 import { Card3DManager } from "./objects/Card3D.js";
+
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const TARGET_FPS = isMobile ? 30 : 60;
+const FRAME_INTERVAL = 1000 / TARGET_FPS;
 
 export default class Experience {
   constructor() {
@@ -14,16 +17,28 @@ export default class Experience {
     this.animation = new Animation();
     this.controls = null;
     this.card3DManager = null;
+    this.model = null;
+    this.lastFrameTime = 0;
+    this.isRendering = false;
 
-    this.model = new Model(
-      this.scene.instance,
-      this.animation,
-      "/elements/VP.glb",
-      () => this.onModelLoaded(),
-    );
+    this.init();
+  }
 
+  async init() {
+    this.loadModel();
     this.addResizeListener();
     this.animate();
+  }
+
+  loadModel() {
+    import("./objects/Model.js").then(({ default: Model }) => {
+      this.model = new Model(
+        this.scene.instance,
+        this.animation,
+        "/elements/VP.glb",
+        () => this.onModelLoaded(),
+      );
+    });
   }
 
   onModelLoaded() {
@@ -97,8 +112,15 @@ export default class Experience {
 
   animate() {
     requestAnimationFrame(() => this.animate());
+
+    const now = performance.now();
+    const elapsed = now - this.lastFrameTime;
+
+    if (elapsed < FRAME_INTERVAL) return;
+    this.lastFrameTime = now - (elapsed % FRAME_INTERVAL);
+
     this.renderer.instance.render(this.scene.instance, this.scene.camera);
-    if (this.card3DManager) {
+    if (this.card3DManager && this.card3DManager.isVisible) {
       this.card3DManager.render();
     }
   }

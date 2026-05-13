@@ -54,6 +54,7 @@ export default class Controls {
 
   showCards() {
     if (this.card3DManager) {
+      this.card3DManager.show();
       this.card3DManager.showAll(0.3, () => {
         const btn = document.getElementById("back-btn");
         btn.classList.add("visible");
@@ -67,6 +68,7 @@ export default class Controls {
     btn.addEventListener("click", () => {
       btn.classList.remove("visible");
       this.card3DManager.hideAll(0, 0.3, () => {
+        this.card3DManager.hide();
         this.animation.reverseAnimation(this.model, this.camera, () => {
           const overlay = document.getElementById("overlay");
           overlay.classList.remove("hidden");
