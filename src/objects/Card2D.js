@@ -14,6 +14,7 @@ export default class Card2D {
     this.isExpanded = false;
     this.origLeft = "";
     this.origTop = "";
+    this.origWidth = 0;
     this.create();
   }
 
@@ -39,29 +40,25 @@ export default class Card2D {
       : "";
 
     this.el.innerHTML = `
-      <button class="card2d-close-btn">✕</button>
-      <div class="card2d-icon">${this.icon}</div>
-      <div class="card2d-line"></div>
-      <div class="card2d-title">${this.title}</div>
-      <div class="card2d-desc">${this.description}</div>
-      ${keyPointsHtml}
-      <div class="card2d-bar"></div>
+      <div class="card2d-inner">
+        <div class="card2d-hleft">
+          <div class="card2d-icon">${this.icon}</div>
+          <div class="card2d-title">${this.title}</div>
+        </div>
+        <div class="card2d-hright">
+          <div class="card2d-line"></div>
+          <div class="card2d-desc">${this.description}</div>
+          ${keyPointsHtml}
+          <div class="card2d-bar"></div>
+        </div>
+      </div>
     `;
 
     gsap.set(this.el, { xPercent: -50, yPercent: -50, scale: 0 });
 
     this.el.addEventListener("click", (e) => {
-      if (e.target.closest(".card2d-close-btn")) return;
       if (this.manager) this.manager.toggleExpand(this);
     });
-
-    const closeBtn = this.el.querySelector(".card2d-close-btn");
-    if (closeBtn) {
-      closeBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (this.manager) this.manager.collapseCard();
-      });
-    }
   }
 
   show(delay = 0) {
@@ -111,17 +108,17 @@ export default class Card2D {
     const keypoints = this.el.querySelector(".card2d-keypoints");
     if (keypoints) keypoints.style.display = "block";
 
-    const closeBtn = this.el.querySelector(".card2d-close-btn");
-    if (closeBtn) closeBtn.classList.add("visible");
-
     gsap.set(this.el, { zIndex: 100 });
+
+    this.origWidth = this.el.offsetWidth;
+    const targetWidth = Math.min(460, window.innerWidth * 0.75);
 
     gsap.to(this.el, {
       left: "50%",
       top: "50%",
       xPercent: -50,
       yPercent: -50,
-      scale: 2.5,
+      width: targetWidth,
       duration: 0.6,
       ease: "power3.out",
     });
@@ -137,19 +134,18 @@ export default class Card2D {
     const keypoints = this.el.querySelector(".card2d-keypoints");
     if (keypoints) keypoints.style.display = "";
 
-    const closeBtn = this.el.querySelector(".card2d-close-btn");
-    if (closeBtn) closeBtn.classList.remove("visible");
-
-    gsap.set(this.el, { zIndex: "" });
-
     gsap.to(this.el, {
       left: this.origLeft,
       top: this.origTop,
       xPercent: -50,
       yPercent: -50,
-      scale: 1,
+      width: this.origWidth,
       duration: instant ? 0.01 : 0.5,
       ease: "power2.inOut",
+      onComplete: () => {
+        this.el.style.width = "";
+        gsap.set(this.el, { zIndex: "" });
+      },
     });
   }
 }

@@ -18,9 +18,17 @@ export default class Card2DManager {
     this.overlay = document.createElement("div");
     this.overlay.className = "card2d-overlay";
     this.overlay.style.display = "none";
-    this.overlay.addEventListener("click", () => this.collapseCard());
-    this.container.appendChild(this.overlay);
+    this.overlay.addEventListener("click", (e) => {
+      if (e.target === this.overlay) this.collapseCard();
+    });
 
+    const overlayX = document.createElement("button");
+    overlayX.className = "card2d-overlay-x";
+    overlayX.textContent = "✕";
+    overlayX.addEventListener("click", () => this.collapseCard());
+    this.overlay.appendChild(overlayX);
+
+    this.container.appendChild(this.overlay);
     this.isInitialized = true;
   }
 
@@ -41,13 +49,17 @@ export default class Card2DManager {
   expandCard(card) {
     this.expandedCard = card;
     card.expand();
+    document.getElementById("back-btn").classList.remove("visible");
     if (this.overlay) this.overlay.style.display = "block";
   }
 
-  collapseCard(instant = false) {
+  collapseCard(instant = false, restoreBackBtn = true) {
     if (!this.expandedCard) return;
     this.expandedCard.collapse(instant);
     this.expandedCard = null;
+    if (restoreBackBtn && this.isVisible) {
+      document.getElementById("back-btn").classList.add("visible");
+    }
     if (this.overlay) this.overlay.style.display = "none";
   }
 
@@ -61,7 +73,7 @@ export default class Card2DManager {
   }
 
   hideAll(delay = 0, stagger = 0.3, onComplete = null) {
-    this.collapseCard(true);
+    this.collapseCard(true, false);
     const reversed = [...this.cards].reverse();
     reversed.forEach((card, index) => {
       card.hide(delay + index * stagger);
@@ -71,7 +83,7 @@ export default class Card2DManager {
   }
 
   removeAll() {
-    this.collapseCard(true);
+    this.collapseCard(true, false);
     this.cards.forEach((c) => c.remove());
     this.cards = [];
   }
