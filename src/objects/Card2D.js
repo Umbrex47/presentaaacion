@@ -16,8 +16,12 @@ export default class Card2D {
     this.el = document.createElement("div");
     this.el.className = "card2d";
 
-    const xPos = this.column === "left" ? "22%" : "78%";
-    const yPos = 22 + (this.order - 1) * 24;
+    const isLeft = this.column === "left";
+    let xPos = isLeft ? "22%" : "78%";
+    if (this.order === 2) {
+      xPos = isLeft ? "16%" : "84%";
+    }
+    const yPos = 20 + (this.order - 1) * 28;
 
     this.el.style.left = xPos;
     this.el.style.top = `${yPos}%`;

@@ -24,8 +24,8 @@ body {
 /* ===== CARDS 2D MANGA ===== */
 .card2d {
   position: absolute;
-  width: min(300px, 72vw);
-  padding: 24px 20px 20px;
+  width: min(230px, 60vw);
+  padding: 18px 16px 16px;
   background: #ffffff;
   border: 3px solid #000;
   box-shadow: 8px 8px 0 0 #000;
@@ -40,9 +40,9 @@ body {
 }
 
 .card2d-icon {
-  font-size: 44px;
+  font-size: 36px;
   text-align: center;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   font-weight: 900;
 }
 
@@ -50,14 +50,14 @@ body {
   width: 100%;
   height: 3px;
   background: #000;
-  margin: 10px 0 14px;
+  margin: 8px 0 10px;
 }
 
 .card2d-title {
-  font-size: clamp(18px, 3.5vw, 24px);
+  font-size: clamp(15px, 2.8vw, 20px);
   font-weight: 900;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   color: #000;
@@ -65,17 +65,17 @@ body {
 }
 
 .card2d-desc {
-  font-size: clamp(12px, 2.2vw, 15px);
+  font-size: clamp(11px, 1.8vw, 13px);
   text-align: center;
-  line-height: 1.6;
+  line-height: 1.5;
   color: #111;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   font-weight: 500;
 }
 
 .card2d-bar {
-  width: 80%;
-  height: 4px;
+  width: 70%;
+  height: 3px;
   background: #000;
   margin: 0 auto;
 }
@@ -357,4 +357,13 @@ body {
   .separator {
     display: none;
   }
+
+  .card2d {
+    width: min(190px, 70vw);
+    padding: 14px 12px 12px;
+    box-shadow: 5px 5px 0 0 #000;
+  }
+  .card2d-icon { font-size: 26px; }
+  .card2d-title { font-size: 13px; }
+  .card2d-desc { font-size: 10px; line-height: 1.4; }
 }
