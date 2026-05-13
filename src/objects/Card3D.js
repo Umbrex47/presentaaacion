@@ -153,66 +153,89 @@ class Card3D {
     canvas.height = Math.floor(768 * scale);
 
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, this.colorScheme.primary + "20");
-    gradient.addColorStop(0.5, this.colorScheme.secondary + "15");
-    gradient.addColorStop(1, this.colorScheme.accent + "20");
+    gradient.addColorStop(0, this.colorScheme.primary + "40");
+    gradient.addColorStop(0.5, this.colorScheme.secondary + "30");
+    gradient.addColorStop(1, this.colorScheme.accent + "40");
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height * 0.4);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height * 0.45);
 
     const gradient2 = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient2.addColorStop(0, "rgba(255, 255, 255, 0.12)");
-    gradient2.addColorStop(0.3, "rgba(255, 255, 255, 0.03)");
+    gradient2.addColorStop(0, "rgba(255, 255, 255, 0.25)");
+    gradient2.addColorStop(0.4, "rgba(255, 255, 255, 0.05)");
     gradient2.addColorStop(1, "rgba(255, 255, 255, 0)");
     ctx.fillStyle = gradient2;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
     ctx.lineWidth = 2;
     this.roundRect(ctx, 8, 8, canvas.width - 16, canvas.height - 16, 16);
     ctx.stroke();
 
+    // Overlay oscuro semitransparente para contraste del texto
+    ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
+    this.roundRect(ctx, 16, Math.floor(70 * scale), canvas.width - 32, Math.floor(540 * scale), 12);
+    ctx.fill();
+
+    // Icono con glow
     ctx.fillStyle = "#ffffff";
-    ctx.font = `bold ${Math.floor(60 * scale)}px Arial, sans-serif`;
+    ctx.font = `bold ${Math.ceil(65 * scale)}px Arial, sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
+    ctx.shadowColor = this.colorScheme.primary;
+    ctx.shadowBlur = 25 * scale;
     ctx.fillText(this.icon, canvas.width / 2, Math.floor(90 * scale));
 
-    ctx.font = `bold ${Math.floor(45 * scale)}px Arial, sans-serif`;
+    ctx.shadowBlur = 0;
+
+    // Título con sombra
+    ctx.font = `bold ${Math.ceil(55 * scale)}px Arial, sans-serif`;
     ctx.fillStyle = "#ffffff";
+    ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
+    ctx.shadowBlur = 12 * scale;
+    ctx.shadowOffsetY = 6 * scale;
     ctx.fillText(this.title, canvas.width / 2, Math.floor(180 * scale));
 
-    ctx.font = `${Math.floor(28 * scale)}px Arial, sans-serif`;
-    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+
+    // Descripción con sombra sutil
+    ctx.font = `${Math.ceil(30 * scale)}px Arial, sans-serif`;
+    ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+    ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+    ctx.shadowBlur = 4 * scale;
+    ctx.shadowOffsetY = 2 * scale;
 
     const words = this.description.split(" ");
     let line = "";
-    let y = Math.floor(290 * scale);
-    const maxWidth = canvas.width - 60;
+    let y = Math.floor(245 * scale);
+    const maxWidth = canvas.width - 70;
 
     words.forEach((word) => {
       const testLine = line + word + " ";
       if (ctx.measureText(testLine).width > maxWidth) {
         ctx.fillText(line.trim(), canvas.width / 2, y);
         line = word + " ";
-        y += Math.floor(35 * scale);
+        y += Math.floor(38 * scale);
       } else {
         line = testLine;
       }
     });
     ctx.fillText(line.trim(), canvas.width / 2, y);
 
-    const iconY = Math.floor(400 * scale);
+    ctx.shadowBlur = 0;
+
+    const iconY = Math.floor(460 * scale);
     const gradientBar = ctx.createLinearGradient(60, 0, canvas.width - 60, 0);
     gradientBar.addColorStop(0, this.colorScheme.primary);
     gradientBar.addColorStop(0.5, this.colorScheme.secondary);
     gradientBar.addColorStop(1, this.colorScheme.accent);
     ctx.fillStyle = gradientBar;
     ctx.fillRect(60, iconY, canvas.width - 120, 4);
-    ctx.globalAlpha = 0.3;
-    ctx.fillRect(60, iconY + 12, (canvas.width - 120) / 3, 2);
+    ctx.globalAlpha = 0.4;
+    ctx.fillRect(60, iconY + 14, (canvas.width - 120) / 3, 3);
     ctx.globalAlpha = 1;
 
     const texture = new THREE.CanvasTexture(canvas);
