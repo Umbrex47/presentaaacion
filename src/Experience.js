@@ -1,0 +1,107 @@
+import Renderer from "./core/Renderer.js";
+import Scene from "./core/Scene.js";
+import Lights from "./core/Lights.js";
+import Model from "./objects/Model.js";
+import Animation from "./core/Animation.js";
+import Controls from "./core/Controls.js";
+import { Card3DManager } from "./objects/Card3D.js";
+
+export default class Experience {
+  constructor() {
+    this.renderer = new Renderer();
+    this.scene = new Scene();
+    this.lights = new Lights(this.scene.instance);
+    this.animation = new Animation();
+    this.controls = null;
+    this.card3DManager = null;
+
+    this.model = new Model(
+      this.scene.instance,
+      this.animation,
+      "/elements/VP.glb",
+      () => this.onModelLoaded(),
+    );
+
+    this.addResizeListener();
+    this.animate();
+  }
+
+  onModelLoaded() {
+    this.card3DManager = new Card3DManager();
+    this.card3DManager.init("card3d-container");
+
+    this.card3DManager.add({
+      title: "Realidad Virtual",
+      description: "Sumérgete en mundos digitales completamente nuevos con tecnología de realidad virtual avanzada",
+      icon: "VR",
+      column: "left",
+      order: 1,
+    });
+    this.card3DManager.add({
+      title: "Realidad Aumentada",
+      description: "Mezcla el mundo real con elementos virtuales para crear experiencias únicas e interactivas",
+      icon: "AR",
+      column: "left",
+      order: 2,
+    });
+    this.card3DManager.add({
+      title: "Innovación",
+      description: "Nuevas tecnologías que transforman la educación y el entretenimiento para siempre",
+      icon: "✨",
+      column: "left",
+      order: 3,
+    });
+    this.card3DManager.add({
+      title: "Aplicaciones",
+      description: "Desde medicina hasta arquitectura, la VR/AR revoluciona múltiples industrias del mundo",
+      icon: "🎓",
+      column: "right",
+      order: 1,
+    });
+    this.card3DManager.add({
+      title: "Tecnología",
+      description: "Dispositivos de última generación como visores, guantes hápticos y controladores",
+      icon: "⚙️",
+      column: "right",
+      order: 2,
+    });
+    this.card3DManager.add({
+      title: "Futuro",
+      description: "El límite es tu imaginación. El futuro de la tecnología está aquí y ahora",
+      icon: "🔮",
+      column: "right",
+      order: 3,
+    });
+
+    this.controls = new Controls(
+      this.scene.camera,
+      this.model.model,
+      this.animation,
+      this.card3DManager,
+      this.scene,
+    );
+    this.controls.onClickElement(document.getElementById("immerssion-btn"));
+    this.controls.setupBackButton();
+  }
+
+  addResizeListener() {
+    window.addEventListener("resize", () => {
+      this.renderer.setSize();
+      this.renderer.setPixelRatio();
+      this.scene.resize();
+      if (this.card3DManager) {
+        this.card3DManager.resize();
+      }
+    });
+  }
+
+  animate() {
+    requestAnimationFrame(() => this.animate());
+    this.renderer.instance.render(this.scene.instance, this.scene.camera);
+    if (this.card3DManager) {
+      this.card3DManager.render();
+    }
+  }
+}
+
+new Experience();
