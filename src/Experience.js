@@ -51,6 +51,7 @@ export default class Experience {
       icon: "VR",
       column: "left",
       order: 1,
+      keyPoints: ["Inmersión total", "Simulaciones 3D", "Educación interactiva"],
     });
     this.cardManager.add({
       title: "Realidad Aumentada",
@@ -58,6 +59,7 @@ export default class Experience {
       icon: "AR",
       column: "left",
       order: 2,
+      keyPoints: ["Superposición digital", "Interacción en vivo", "Dispositivos accesibles"],
     });
     this.cardManager.add({
       title: "Innovación",
@@ -65,6 +67,7 @@ export default class Experience {
       icon: "✨",
       column: "left",
       order: 3,
+      keyPoints: ["Transformación digital", "Nuevos horizontes", "Creatividad sin límites"],
     });
     this.cardManager.add({
       title: "Aplicaciones",
@@ -72,6 +75,7 @@ export default class Experience {
       icon: "🎓",
       column: "right",
       order: 1,
+      keyPoints: ["Medicina", "Arquitectura", "Entretenimiento"],
     });
     this.cardManager.add({
       title: "Tecnología",
@@ -79,6 +83,7 @@ export default class Experience {
       icon: "⚙️",
       column: "right",
       order: 2,
+      keyPoints: ["Visores VR/AR", "Guantes hápticos", "Controladores de movimiento"],
     });
     this.cardManager.add({
       title: "Futuro",
@@ -86,6 +91,7 @@ export default class Experience {
       icon: "🔮",
       column: "right",
       order: 3,
+      keyPoints: ["IA + VR/AR", "Metaverso", "Educación inmersiva"],
     });
 
     this.controls = new Controls(
