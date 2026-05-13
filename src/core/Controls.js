@@ -1,11 +1,11 @@
 import * as THREE from "three";
 
 export default class Controls {
-  constructor(camera, model, animation, card3DManager = null, scene = null) {
+  constructor(camera, model, animation, cardManager = null, scene = null) {
     this.camera = camera;
     this.model = model;
     this.animation = animation;
-    this.card3DManager = card3DManager;
+    this.cardManager = cardManager;
     this.scene = scene;
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
@@ -37,8 +37,8 @@ export default class Controls {
   onMouseMove(e) {
     this.updateMouse(e);
 
-    if (this.card3DManager && this.card3DManager.updateMouse) {
-      this.card3DManager.updateMouse(this.mouse.x, this.mouse.y);
+    if (this.cardManager && this.cardManager.updateMouse) {
+      this.cardManager.updateMouse(this.mouse.x, this.mouse.y);
     }
   }
 
@@ -53,9 +53,9 @@ export default class Controls {
   }
 
   showCards() {
-    if (this.card3DManager) {
-      this.card3DManager.show();
-      this.card3DManager.showAll(0.3, () => {
+    if (this.cardManager) {
+      this.cardManager.show();
+      this.cardManager.showAll(0.3, () => {
         const btn = document.getElementById("back-btn");
         btn.classList.add("visible");
       });
@@ -67,8 +67,8 @@ export default class Controls {
 
     btn.addEventListener("click", () => {
       btn.classList.remove("visible");
-      this.card3DManager.hideAll(0, 0.3, () => {
-        this.card3DManager.hide();
+      this.cardManager.hideAll(0, 0.3, () => {
+        this.cardManager.hide();
         this.animation.reverseAnimation(this.model, this.camera, () => {
           const overlay = document.getElementById("overlay");
           overlay.classList.remove("hidden");
