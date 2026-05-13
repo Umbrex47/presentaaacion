@@ -8,6 +8,7 @@ export default class Card2DManager {
     this.isVisible = false;
     this.expandedCard = null;
     this.overlay = null;
+    this.overlayX = null;
   }
 
   init(containerId) {
@@ -21,14 +22,18 @@ export default class Card2DManager {
     this.overlay.addEventListener("click", (e) => {
       if (e.target === this.overlay) this.collapseCard();
     });
-
-    const overlayX = document.createElement("button");
-    overlayX.className = "card2d-overlay-x";
-    overlayX.textContent = "✕";
-    overlayX.addEventListener("click", () => this.collapseCard());
-    this.overlay.appendChild(overlayX);
-
     this.container.appendChild(this.overlay);
+
+    this.overlayX = document.createElement("button");
+    this.overlayX.className = "card2d-overlay-x";
+    this.overlayX.textContent = "✕";
+    this.overlayX.style.display = "none";
+    this.overlayX.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.collapseCard();
+    });
+    this.container.appendChild(this.overlayX);
+
     this.isInitialized = true;
   }
 
@@ -51,6 +56,7 @@ export default class Card2DManager {
     card.expand();
     document.getElementById("back-btn").classList.remove("visible");
     if (this.overlay) this.overlay.style.display = "block";
+    if (this.overlayX) this.overlayX.style.display = "block";
   }
 
   collapseCard(instant = false, restoreBackBtn = true) {
@@ -61,6 +67,7 @@ export default class Card2DManager {
       document.getElementById("back-btn").classList.add("visible");
     }
     if (this.overlay) this.overlay.style.display = "none";
+    if (this.overlayX) this.overlayX.style.display = "none";
   }
 
   showAll(stagger = 0.3, onComplete = null) {
