@@ -47,7 +47,8 @@ export default class Animation {
       .to("#transition-stage", {
         duration: 1,
         backgroundColor: "#ffffff",
-      });
+      })
+      .set("#transition-stage", { pointerEvents: "auto" });
     this.tweens.push(tl);
   }
 
@@ -79,6 +80,7 @@ export default class Animation {
       })
       .to(model.rotation, { duration: 1, y: originalRot.y })
       .to("#transition-stage", { duration: 0.5, opacity: 0, zIndex: 0 })
+      .set("#transition-stage", { pointerEvents: "none" })
       .to("#back-btn", { duration: 0.3, opacity: 0, pointerEvents: "none" });
     this.tweens.push(tl);
   }

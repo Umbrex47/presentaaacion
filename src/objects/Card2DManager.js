@@ -16,23 +16,23 @@ export default class Card2DManager {
     if (!this.container) return;
     this.container.innerHTML = "";
 
+    const stage = document.getElementById("transition-stage");
+
     this.overlay = document.createElement("div");
-    this.overlay.className = "card2d-overlay";
-    this.overlay.style.display = "none";
+    this.overlay.className = "card2d-overlay-global";
     this.overlay.addEventListener("click", (e) => {
       if (e.target === this.overlay) this.collapseCard();
     });
-    this.container.appendChild(this.overlay);
+    stage.appendChild(this.overlay);
 
     this.overlayX = document.createElement("button");
-    this.overlayX.className = "card2d-overlay-x";
+    this.overlayX.className = "card2d-overlay-x-global";
     this.overlayX.textContent = "✕";
-    this.overlayX.style.display = "none";
     this.overlayX.addEventListener("click", (e) => {
       e.stopPropagation();
       this.collapseCard();
     });
-    this.container.appendChild(this.overlayX);
+    stage.appendChild(this.overlayX);
 
     this.isInitialized = true;
   }
@@ -55,19 +55,21 @@ export default class Card2DManager {
     this.expandedCard = card;
     card.expand();
     document.getElementById("back-btn").classList.remove("visible");
-    if (this.overlay) this.overlay.style.display = "block";
-    if (this.overlayX) this.overlayX.style.display = "block";
+    document.getElementById("farewell-btn").classList.remove("visible");
+    if (this.overlay) this.overlay.classList.add("visible");
+    if (this.overlayX) this.overlayX.classList.add("visible");
   }
 
-  collapseCard(instant = false, restoreBackBtn = true) {
+  collapseCard(instant = false, restoreBtns = true) {
     if (!this.expandedCard) return;
     this.expandedCard.collapse(instant);
     this.expandedCard = null;
-    if (restoreBackBtn && this.isVisible) {
+    if (restoreBtns && this.isVisible) {
       document.getElementById("back-btn").classList.add("visible");
+      document.getElementById("farewell-btn").classList.add("visible");
     }
-    if (this.overlay) this.overlay.style.display = "none";
-    if (this.overlayX) this.overlayX.style.display = "none";
+    if (this.overlay) this.overlay.classList.remove("visible");
+    if (this.overlayX) this.overlayX.classList.remove("visible");
   }
 
   showAll(stagger = 0.3, onComplete = null) {
@@ -95,7 +97,48 @@ export default class Card2DManager {
     this.cards = [];
   }
 
-  render() {}
+  showFarewell() {
+    this.collapseCard(true, false);
+    this.hide();
+    const reversed = [...this.cards].reverse();
+    reversed.forEach((card, index) => {
+      card.hide(index * 0.15);
+    });
+    const totalTime = this.cards.length * 0.15 * 1000 + 400;
+    setTimeout(() => {
+      const farewell = document.getElementById("farewell");
+      if (farewell) farewell.classList.add("visible");
+      this.generateQR();
+    }, totalTime);
+  }
+
+  hideFarewell() {
+    const farewell = document.getElementById("farewell");
+    if (farewell) farewell.classList.remove("visible");
+  }
+
+  generateQR() {
+    const canvas = document.getElementById("farewell-qr");
+    if (!canvas) return;
+
+    import("qrcode").then((QRCode) => {
+      QRCode.toCanvas(
+        canvas,
+        "https://forms.example.com/satisfaccion-unitecnar",
+        {
+          width: 160,
+          margin: 2,
+          color: {
+            dark: "#000000",
+            light: "#ffffff",
+          },
+        },
+        (error) => {
+          if (error) console.error("QR error:", error);
+        },
+      );
+    });
+  }
 
   show() {
     this.isVisible = true;
@@ -108,6 +151,4 @@ export default class Card2DManager {
   updateMouse(mouseX, mouseY) {
     this.cards.forEach((card) => card.updateParallax(mouseX, mouseY));
   }
-
-  resize() {}
 }

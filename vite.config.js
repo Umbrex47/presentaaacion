@@ -1,29 +1,17 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  base: './',
   build: {
     target: "es2020",
-    minify: "terser",
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          three: ["three"],
-          gsap: ["gsap"],
-        },
-      },
+    minify: "esbuild",
+    esbuild: {
+      drop: ["console", "debugger"],
     },
     chunkSizeWarningLimit: 1000,
+    sourcemap: false,
   },
   optimizeDeps: {
     include: ["three", "gsap"],
-  },
-  build: {
-    sourcemap: false,
   },
 });

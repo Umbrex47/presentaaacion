@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { gsap } from "gsap";
 
 export default class Controls {
   constructor(camera, model, animation, cardManager = null, scene = null) {
@@ -56,8 +57,10 @@ export default class Controls {
     if (this.cardManager) {
       this.cardManager.show();
       this.cardManager.showAll(0.3, () => {
-        const btn = document.getElementById("back-btn");
-        btn.classList.add("visible");
+        gsap.set("#back-btn", { clearProps: "opacity,pointerEvents" });
+        gsap.set("#farewell-btn", { clearProps: "opacity,pointerEvents" });
+        document.getElementById("back-btn").classList.add("visible");
+        document.getElementById("farewell-btn").classList.add("visible");
       });
     }
   }
@@ -66,7 +69,9 @@ export default class Controls {
     const btn = document.getElementById("back-btn");
 
     btn.addEventListener("click", () => {
+      document.getElementById("farewell-btn").classList.remove("visible");
       btn.classList.remove("visible");
+      this.cardManager.collapseCard(true);
       this.cardManager.hideAll(0, 0.3, () => {
         this.cardManager.hide();
         this.animation.reverseAnimation(this.model, this.camera, () => {
@@ -74,6 +79,31 @@ export default class Controls {
           overlay.classList.remove("hidden");
           overlay.style.pointerEvents = "auto";
         });
+      });
+    });
+  }
+
+  setupFarewellButton() {
+    const btn = document.getElementById("farewell-btn");
+
+    btn.addEventListener("click", () => {
+      document.getElementById("back-btn").classList.remove("visible");
+      btn.classList.remove("visible");
+      this.cardManager.showFarewell();
+    });
+  }
+
+  setupFarewellClose() {
+    const btn = document.getElementById("farewell-close-btn");
+
+    btn.addEventListener("click", () => {
+      this.cardManager.hideFarewell();
+      this.cardManager.show();
+      this.cardManager.showAll(0.2, () => {
+        gsap.set("#back-btn", { clearProps: "opacity,pointerEvents" });
+        gsap.set("#farewell-btn", { clearProps: "opacity,pointerEvents" });
+        document.getElementById("back-btn").classList.add("visible");
+        document.getElementById("farewell-btn").classList.add("visible");
       });
     });
   }

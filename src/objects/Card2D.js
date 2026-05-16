@@ -1,10 +1,21 @@
 import { gsap } from "gsap";
+import * as lucide from "lucide";
+
+const ICON_MAP = {
+  VR: "Glasses",
+  AR: "ScanEye",
+  MR: "Blend",
+  Apps: "GraduationCap",
+  Tech: "Cog",
+  Learn: "Brain",
+};
 
 export default class Card2D {
   constructor(options, manager) {
     this.title = options.title;
     this.description = options.description;
-    this.icon = options.icon;
+    this.iconName = options.icon || "Glasses";
+    this.color = options.color || "#000000";
     this.column = options.column || "left";
     this.order = options.order || 1;
     this.keyPoints = options.keyPoints || [];
@@ -21,6 +32,7 @@ export default class Card2D {
   create() {
     this.el = document.createElement("div");
     this.el.className = "card2d";
+    this.el.style.setProperty("--card-color", this.color);
 
     const isLeft = this.column === "left";
     let xPos = isLeft ? "22%" : "78%";
@@ -35,21 +47,24 @@ export default class Card2D {
     this.el.style.left = this.origLeft;
     this.el.style.top = this.origTop;
 
+    const iconHtml = this.renderIcon();
     const keyPointsHtml = this.keyPoints.length
       ? `<ul class="card2d-keypoints">${this.keyPoints.map((k) => `<li>${k}</li>`).join("")}</ul>`
       : "";
 
     this.el.innerHTML = `
-      <div class="card2d-inner">
-        <div class="card2d-hleft">
-          <div class="card2d-icon">${this.icon}</div>
-          <div class="card2d-title">${this.title}</div>
-        </div>
-        <div class="card2d-hright">
-          <div class="card2d-line"></div>
-          <div class="card2d-desc">${this.description}</div>
-          ${keyPointsHtml}
-          <div class="card2d-bar"></div>
+      <div class="card2d-body">
+        <div class="card2d-inner">
+          <div class="card2d-hleft">
+            <div class="card2d-icon">${iconHtml}</div>
+            <div class="card2d-title">${this.title}</div>
+          </div>
+          <div class="card2d-hright">
+            <div class="card2d-line"></div>
+            <div class="card2d-desc">${this.description}</div>
+            ${keyPointsHtml}
+            <div class="card2d-bar"></div>
+          </div>
         </div>
       </div>
     `;
@@ -59,6 +74,16 @@ export default class Card2D {
     this.el.addEventListener("click", (e) => {
       if (this.manager) this.manager.toggleExpand(this);
     });
+  }
+
+  renderIcon() {
+    const lucideName = ICON_MAP[this.iconName] || "Glasses";
+    const iconDef = lucide[lucideName];
+    if (iconDef && lucide.createElement) {
+      const svg = lucide.createElement(iconDef);
+      return svg ? svg.outerHTML : "";
+    }
+    return "";
   }
 
   show(delay = 0) {
@@ -106,9 +131,23 @@ export default class Card2D {
     this.el.classList.add("card2d-expanded");
 
     const keypoints = this.el.querySelector(".card2d-keypoints");
-    if (keypoints) keypoints.style.display = "block";
+    if (keypoints) {
+      keypoints.style.display = "block";
+      const items = keypoints.querySelectorAll("li");
+      gsap.fromTo(
+        items,
+        { opacity: 0, y: 10 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.35,
+          stagger: 0.1,
+          ease: "power2.out",
+        },
+      );
+    }
 
-    gsap.set(this.el, { zIndex: 100 });
+    gsap.set(this.el, { zIndex: 1000 });
 
     this.origWidth = this.el.offsetWidth;
     const targetWidth = Math.min(460, window.innerWidth * 0.75);

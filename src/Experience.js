@@ -4,6 +4,7 @@ import Lights from "./core/Lights.js";
 import Animation from "./core/Animation.js";
 import Controls from "./core/Controls.js";
 import Card2DManager from "./objects/Card2DManager.js";
+import Particles from "./objects/Particles.js";
 
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 const TARGET_FPS = isMobile ? 30 : 60;
@@ -18,6 +19,7 @@ export default class Experience {
     this.controls = null;
     this.cardManager = null;
     this.model = null;
+    this.particles = null;
     this.lastFrameTime = 0;
     this.isRendering = false;
 
@@ -42,56 +44,64 @@ export default class Experience {
   }
 
   onModelLoaded() {
+    this.particles = new Particles(this.scene.instance);
+
     this.cardManager = new Card2DManager();
     this.cardManager.init("card3d-container");
 
     this.cardManager.add({
       title: "Realidad Virtual",
-      description: "Sumérgete en mundos digitales completamente nuevos con tecnología de realidad virtual avanzada",
+      description: "Simulación tridimensional inmersiva que sustituye el mundo real mediante tecnología digital",
       icon: "VR",
+      color: "#3B82F6",
       column: "left",
       order: 1,
-      keyPoints: ["Inmersión total", "Simulaciones 3D", "Educación interactiva"],
+      keyPoints: ["Inmersión total", "Captura de movimiento", "Procesamiento y salida visual"],
     });
     this.cardManager.add({
       title: "Realidad Aumentada",
-      description: "Mezcla el mundo real con elementos virtuales para crear experiencias únicas e interactivas",
+      description: "Superposición de elementos digitales sobre el entorno físico en tiempo real",
       icon: "AR",
+      color: "#10B981",
       column: "left",
       order: 2,
       keyPoints: ["Superposición digital", "Interacción en vivo", "Dispositivos accesibles"],
     });
     this.cardManager.add({
-      title: "Innovación",
-      description: "Nuevas tecnologías que transforman la educación y el entretenimiento para siempre",
-      icon: "✨",
+      title: "Realidad Mixta",
+      description: "Fusión de realidad virtual y aumentada para interacción híbrida entre objetos reales y digitales",
+      icon: "MR",
+      color: "#8B5CF6",
       column: "left",
       order: 3,
-      keyPoints: ["Transformación digital", "Nuevos horizontes", "Creatividad sin límites"],
+      keyPoints: ["Combinación VR+AR", "Continuo virtualidad", "Interacción híbrida"],
     });
     this.cardManager.add({
       title: "Aplicaciones",
-      description: "Desde medicina hasta arquitectura, la VR/AR revoluciona múltiples industrias del mundo",
-      icon: "🎓",
+      description: "Medicina, arquitectura, educación y entretenimiento se transforman con VR/AR/MR",
+      icon: "Apps",
+      color: "#F59E0B",
       column: "right",
       order: 1,
-      keyPoints: ["Medicina", "Arquitectura", "Entretenimiento"],
+      keyPoints: ["Simulación quirúrgica", "Recorridos arquitectónicos", "Aprendizaje inmersivo"],
     });
     this.cardManager.add({
       title: "Tecnología",
-      description: "Dispositivos de última generación como visores, guantes hápticos y controladores",
-      icon: "⚙️",
+      description: "Sensores, 6DoF, baja latencia y lentes Fresnel hacen posible la inmersión total",
+      icon: "Tech",
+      color: "#06B6D4",
       column: "right",
       order: 2,
-      keyPoints: ["Visores VR/AR", "Guantes hápticos", "Controladores de movimiento"],
+      keyPoints: ["6DoF (seis grados libertad)", "Latencia < 20ms", "Lentes Fresnel"],
     });
     this.cardManager.add({
-      title: "Futuro",
-      description: "El límite es tu imaginación. El futuro de la tecnología está aquí y ahora",
-      icon: "🔮",
+      title: "Aprender Haciendo",
+      description: "La VR no reemplaza la experiencia, la hace accesible para todos los estudiantes",
+      icon: "Learn",
+      color: "#EF4444",
       column: "right",
       order: 3,
-      keyPoints: ["IA + VR/AR", "Metaverso", "Educación inmersiva"],
+      keyPoints: ["Traer la realidad al aula", "Experiencia sin riesgo", "Práctica vivencial"],
     });
 
     this.controls = new Controls(
@@ -103,6 +113,11 @@ export default class Experience {
     );
     this.controls.onClickElement(document.getElementById("immerssion-btn"));
     this.controls.setupBackButton();
+    this.controls.setupFarewellButton();
+    this.controls.setupFarewellClose();
+
+    const loader = document.getElementById("loader");
+    if (loader) loader.classList.add("hidden");
   }
 
   addResizeListener() {
@@ -126,6 +141,9 @@ export default class Experience {
     this.lastFrameTime = now - (elapsed % FRAME_INTERVAL);
 
     this.renderer.instance.render(this.scene.instance, this.scene.camera);
+    if (this.particles) {
+      this.particles.update(now * 0.001);
+    }
     if (this.cardManager && this.cardManager.isVisible) {
       this.cardManager.render();
     }
