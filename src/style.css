@@ -204,6 +204,24 @@ body {
   animation: fadeSlideIn 0.8s ease-out 1.2s both;
 }
 
+.qr-closing-container {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeSlideIn 0.8s ease-out 1.6s both;
+}
+
+.qr-closing-container canvas {
+  border: 3px solid #000000;
+  border-radius: 8px;
+  padding: 8px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  height: auto;
+}
+
 .back-btn {
   position: fixed;
   bottom: 40px;
@@ -274,5 +292,13 @@ body {
 
   .separator {
     display: none;
+  }
+
+  .qr-closing-container {
+    margin-top: 30px;
+  }
+
+  .qr-closing-container canvas {
+    max-width: 250px;
   }
 }
