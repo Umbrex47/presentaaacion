@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import QRGenerator from "../objects/QRGenerator.js";
 
 export default class Controls {
   constructor(camera, model, animation, card3DManager = null, scene = null) {
@@ -9,6 +10,7 @@ export default class Controls {
     this.scene = scene;
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
+    this.qrGenerator = new QRGenerator();
     this.setupListeners();
   }
 
@@ -71,8 +73,19 @@ export default class Controls {
           const overlay = document.getElementById("overlay");
           overlay.classList.remove("hidden");
           overlay.style.pointerEvents = "auto";
+          
+          // Generar el QR cuando volvemos a la pantalla de cierre
+          this.generateClosingQR();
         });
       });
     });
+  }
+
+  async generateClosingQR() {
+    // Generar el QR con el enlace de feedback
+    await this.qrGenerator.generateQR(
+      "https://feedback-vr.netlify.app/",
+      "qr-closing"
+    );
   }
 }
