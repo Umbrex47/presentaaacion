@@ -1,15 +1,16 @@
 import * as THREE from "three";
-import { gsap } from "gsap";
+import QRGenerator from "../objects/QRGenerator.js";
 
 export default class Controls {
-  constructor(camera, model, animation, cardManager = null, scene = null) {
+  constructor(camera, model, animation, card3DManager = null, scene = null) {
     this.camera = camera;
     this.model = model;
     this.animation = animation;
-    this.cardManager = cardManager;
+    this.card3DManager = card3DManager;
     this.scene = scene;
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
+    this.qrGenerator = new QRGenerator();
     this.setupListeners();
   }
 
@@ -38,8 +39,8 @@ export default class Controls {
   onMouseMove(e) {
     this.updateMouse(e);
 
-    if (this.cardManager && this.cardManager.updateMouse) {
-      this.cardManager.updateMouse(this.mouse.x, this.mouse.y);
+    if (this.card3DManager && this.card3DManager.updateMouse) {
+      this.card3DManager.updateMouse(this.mouse.x, this.mouse.y);
     }
   }
 
@@ -54,13 +55,10 @@ export default class Controls {
   }
 
   showCards() {
-    if (this.cardManager) {
-      this.cardManager.show();
-      this.cardManager.showAll(0.3, () => {
-        gsap.set("#back-btn", { clearProps: "opacity,pointerEvents" });
-        gsap.set("#farewell-btn", { clearProps: "opacity,pointerEvents" });
-        document.getElementById("back-btn").classList.add("visible");
-        document.getElementById("farewell-btn").classList.add("visible");
+    if (this.card3DManager) {
+      this.card3DManager.showAll(0.3, () => {
+        const btn = document.getElementById("back-btn");
+        btn.classList.add("visible");
       });
     }
   }
@@ -69,42 +67,25 @@ export default class Controls {
     const btn = document.getElementById("back-btn");
 
     btn.addEventListener("click", () => {
-      document.getElementById("farewell-btn").classList.remove("visible");
       btn.classList.remove("visible");
-      this.cardManager.collapseCard(true);
-      this.cardManager.hideAll(0, 0.3, () => {
-        this.cardManager.hide();
+      this.card3DManager.hideAll(0, 0.3, () => {
         this.animation.reverseAnimation(this.model, this.camera, () => {
           const overlay = document.getElementById("overlay");
           overlay.classList.remove("hidden");
           overlay.style.pointerEvents = "auto";
+          
+          // Generar el QR cuando volvemos a la pantalla de cierre
+          this.generateClosingQR();
         });
       });
     });
   }
 
-  setupFarewellButton() {
-    const btn = document.getElementById("farewell-btn");
-
-    btn.addEventListener("click", () => {
-      document.getElementById("back-btn").classList.remove("visible");
-      btn.classList.remove("visible");
-      this.cardManager.showFarewell();
-    });
-  }
-
-  setupFarewellClose() {
-    const btn = document.getElementById("farewell-close-btn");
-
-    btn.addEventListener("click", () => {
-      this.cardManager.hideFarewell();
-      this.cardManager.show();
-      this.cardManager.showAll(0.2, () => {
-        gsap.set("#back-btn", { clearProps: "opacity,pointerEvents" });
-        gsap.set("#farewell-btn", { clearProps: "opacity,pointerEvents" });
-        document.getElementById("back-btn").classList.add("visible");
-        document.getElementById("farewell-btn").classList.add("visible");
-      });
-    });
+  async generateClosingQR() {
+    // Generar el QR con el enlace de feedback
+    await this.qrGenerator.generateQR(
+      "https://feedback-vr.netlify.app/",
+      "qr-closing"
+    );
   }
 }

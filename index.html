@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/src/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <title>UNITECNAR - Realidad Virtual y Aumentada</title>
   </head>
   <body>
@@ -24,47 +30,22 @@
         <div class="authors">
           <div class="author">
             <span class="name">Khristofer Merida</span>
-            <span class="role">Ponente y Desarrollador</span>
+            <span class="role">Desarrollador</span>
           </div>
           <div class="separator">+</div>
           <div class="author">
             <span class="name">Randy</span>
-            <span class="role">Ponente</span>
+            <span class="role">Desarrollador</span>
           </div>
         </div>
         <p class="thanks">
           Agradecemos la oportunidad de presentar este proyecto en UNITECNAR
         </p>
         <div class="institution">IE Soledad Roman de Nunez</div>
+        <div id="qr-closing" class="qr-closing-container"></div>
       </div>
     </div>
     <button id="back-btn" class="back-btn">Volver</button>
-    <button id="farewell-btn" class="farewell-btn">Cierre</button>
-    <div id="farewell">
-      <div class="farewell-content">
-        <div class="farewell-left">
-          <h2 class="farewell-title">Fue un inmenso placer presentarles un poco de este saber</h2>
-          <p class="farewell-quote">"Deseo que hayan disfrutado esta presentacion!"</p>
-          <p class="farewell-quote">"La realidad virtual no reemplaza la experiencia, la hace accesible."</p>
-          <p class="farewell-text">
-            Cuando no podemos llevar al aprendiz a la realidad,<br>
-            traemos la realidad a él.
-          </p>
-          <div class="farewell-divider"></div>
-          <p class="farewell-sub">Sus palabras son importantes para mi crecimiento, agradecere inmensamente su opinion</p>
-        </div>
-        <div class="farewell-right">
-          <canvas id="farewell-qr"></canvas>
-          <button id="farewell-close-btn" class="farewell-close-btn">Volver a cards</button>
-        </div>
-      </div>
-    </div>
-    <div id="loader">
-      <div class="loader-content">
-        <div class="loader-icon"></div>
-        <p class="loader-text">Cargando experiencia...</p>
-      </div>
-    </div>
     <script type="module" src="/src/Experience.js"></script>
   </body>
 </html>
